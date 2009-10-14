@@ -24,10 +24,11 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/scintillation.rb",
+     "scintillation.gemspec",
      "spec/scintillation_spec.rb",
      "spec/spec_helper.rb"
   ]
-  s.homepage = %q{http://github.com/soccer022483/scintillation}
+  s.homepage = %q{http://gemcutter.org/gems/scintillation}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
