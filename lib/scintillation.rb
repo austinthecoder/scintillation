@@ -7,9 +7,9 @@ module Scintillation
     
     def method_missing(name, *args)
       if /^(([a-z]+)_)?msg(_for_([a -z]+))?$/.match(name.to_s)
-        messages.add(args.first, :tone => $2, :scope => $4)
+        add_message(args.first, :tone => $2, :scope => $4)
       elsif /^(([a-z]+)_)?msgs$/.match(name.to_s)
-        messages.get($2)
+        get_messages($2)
       else
         super
       end
