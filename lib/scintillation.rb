@@ -29,6 +29,7 @@ module Scintillation
     def initialize(session)
       @session = session
       @session[:messages] = {}
+      @temp_msgs = {}
     end
     
     def add(obj, tone = nil, scope = nil)
@@ -40,7 +41,7 @@ module Scintillation
     end
     
     def get(scope = nil)
-      @session[:messages].delete(scope.to_s) || []
+      @temp_msgs[scope.to_s] ||= (@session[:messages].delete(scope.to_s) || [])
     end
   end
   
