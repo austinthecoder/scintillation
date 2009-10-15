@@ -16,7 +16,6 @@ module Scintillation
       elsif /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       else
-        raise method.inspect
         super(method.to_sym, args, &block)
       end
     end
