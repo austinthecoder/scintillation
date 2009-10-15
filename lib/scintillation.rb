@@ -3,7 +3,7 @@ module Scintillation
   module Messageable
     def self.include(base)
       base.delegate(:add_message, :to => :messages)
-      # base.delegate([:add_message, :get_messages], :to => :messages)
+      base.delegate(:get_messages, :to => :messages)
     end
     
     def method_missing(name, *args)
