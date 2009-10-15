@@ -28,7 +28,7 @@ module Scintillation
   class SessionMessages
     def initialize(session)
       @session = session
-      @session[:messages] = {}
+      @session[:messages] ||= {}
       @temp_msgs = {}
     end
     
