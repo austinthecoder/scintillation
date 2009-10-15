@@ -11,7 +11,13 @@ module Scintillation
     end
     
     def method_missing(name, *args)
-      /^((\w+)_)?msg(_for_(\w+))?$/.match(name.to_s) ? messages.add(args[0], $2, $4) : super
+      if /^((\w+)_)?msg(_for_(\w+))?$/.match(name.to_s)
+        messages.add(args[0], $2, $4)
+      elsif /^(([a-z]+)_)?msgs$/.match(name.to_s)
+        messages.get($2)
+      else
+        super
+      end
     end
   end
   
