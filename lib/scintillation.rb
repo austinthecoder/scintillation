@@ -1,9 +1,8 @@
 module Scintillation
   
   module Messageable
-    def self.include(base)
-      base.delegate(:add_message, :to => :messages)
-      base.delegate(:get_messages, :to => :messages)
+    def self.included(base)
+      base.delegate([:add_message, :get_messages], :to => :messages) if base.respond_to?(:delegate)
     end
     
     def method_missing(name, *args)
@@ -22,7 +21,7 @@ module Scintillation
   module ControllerHelpers
     include Scintillation::Messageable
     
-    def self.include(base)
+    def self.included(base)
       base.helper_method(:messages)
       super
     end
