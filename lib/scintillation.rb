@@ -10,7 +10,7 @@ module Scintillation
     end
     
     def method_missing(name, *args)
-      /^(([a-z]+)_)?msg(_for_([a -z]+))?$/.match(name.to_s) ? messages.add(args[0], $2, $4) : super
+      /^((\w+)_)?msg(_for_(\w+))?$/.match(name.to_s) ? messages.add(args[0], $2, $4) : super
     end
   end
   
