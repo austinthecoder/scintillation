@@ -26,18 +26,6 @@ end
 
 describe Scintillation::Message do
   it "should create" do
-    m = Scintillation::Message.new("message")
-    [m.to_s, m.tone].should == ['message', nil]
-  
-    m = Scintillation::Message.new("message", nil)
-    [m.to_s, m.tone].should == ['message', nil]
-  
-    m = Scintillation::Message.new("message", '')
-    [m.to_s, m.tone].should == ['message', nil]
-  
-    m = Scintillation::Message.new("message", ' ')
-    [m.to_s, m.tone].should == ['message', nil]
-  
     m = Scintillation::Message.new("message", 'positive')
     [m.to_s, m.tone].should == ['message', 'positive']
   end

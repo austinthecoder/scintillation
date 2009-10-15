@@ -47,14 +47,7 @@ module Scintillation
   
   ##################################################
   
-  class Message
-    attr_reader :to_s, :tone
-  
-    def initialize(body, tone = nil)
-      @to_s = body.to_s
-      @tone = tone.to_s unless tone !~ /\S/
-    end
-  end
+  Message = Struct.new(:to_s, :tone)
   
 end
 
