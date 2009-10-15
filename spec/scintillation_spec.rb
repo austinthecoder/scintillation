@@ -1,49 +1,42 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-SampleData = Struct.new(:setter_method, :getter_method, :tone, :scope) do
-  def body
-    setter_method
+describe Scintillation::SessionMessages do
+  it "should add/get messages" do
+    sm = Scintillation::SessionMessages.new({})
+    
+    sm.add_message("a")
+    sm.add_message("b", :tone => 'x')
+    sm.add_message("c", :scope => 'y')
+    sm.add_message("d", :tone => 'x', :scope => 'y')
+    
+    messages = sm.get_messages
+    messages.size.should == 2
+    messages.map { |m| [m.to_s, m.tone, m.scope] }.should == [['a', nil, nil], ['b', 'x', nil]]
+    
+    messages = sm.get_messages('z')
+    messages.size.should == 0
+    
+    messages = sm.get_messages('y')
+    messages.size.should == 2
+    messages.map { |m| [m.to_s, m.tone, m.scope] }.should == [['c', nil, 'y'], ['d', 'x', 'y']]
   end
 end
 
-describe "Scintillation" do
-  it "messages" do
-    msgs_obj = Soccer022483::Scintillation::Messages.new
-    msgs_obj.instance_variable_get(:@messages).should be_empty
-    
-    samples = []
-    samples << SampleData.new('message', 'messages', nil, nil)
-    samples << SampleData.new('positive_message', 'positive_messages', 'positive', nil)
-    samples << SampleData.new('message_for_login', 'messages_for_login', nil, 'login')
-    samples << SampleData.new('negative_message_for_user', 'negative_messages_for_user', 'negative', 'user')
-    
-    samples.each { |s| msgs_obj.send(s.setter_method, s.body) }
-    
-    size = 4
-    
-    samples.each do |s|
-      msgs_obj.instance_variable_get(:@messages).size.should == size
-      msgs = msgs_obj.send(s.getter_method)
-      msgs.size.should == 1
-      msgs.map { |m| [m.to_s, m.tone, m.scope] }.should == [[s.body, s.tone, s.scope]]
-      size -= 1
-    end
-  end
+describe Scintillation::Message do
+  it "should create" do
+    m = Scintillation::Message.new("message")
+    [m.to_s, m.tone, m.scope].should == ['message', nil, nil]
   
-  it "message" do
-    m = Soccer022483::Scintillation::Message.new("message")
+    m = Scintillation::Message.new("message", nil, nil)
     [m.to_s, m.tone, m.scope].should == ['message', nil, nil]
-    
-    m = Soccer022483::Scintillation::Message.new("message", nil, nil)
+  
+    m = Scintillation::Message.new("message", '', '')
     [m.to_s, m.tone, m.scope].should == ['message', nil, nil]
-    
-    m = Soccer022483::Scintillation::Message.new("message", '', '')
+  
+    m = Scintillation::Message.new("message", ' ', ' ')
     [m.to_s, m.tone, m.scope].should == ['message', nil, nil]
-    
-    m = Soccer022483::Scintillation::Message.new("message", ' ', ' ')
-    [m.to_s, m.tone, m.scope].should == ['message', nil, nil]
-    
-    m = Soccer022483::Scintillation::Message.new("message", 'positive', 'login')
+  
+    m = Scintillation::Message.new("message", 'positive', 'login')
     [m.to_s, m.tone, m.scope].should == ['message', 'positive', 'login']
   end
 end
