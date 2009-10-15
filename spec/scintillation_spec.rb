@@ -1,5 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
+module ActiveRecord; Errors = Struct.new(nil); end
+
 describe Scintillation::SessionMessages do
   it "should add/get messages" do
     sm = Scintillation::SessionMessages.new({})

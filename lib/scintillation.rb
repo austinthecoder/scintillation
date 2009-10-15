@@ -3,6 +3,7 @@ module Scintillation
   module ControllerHelpers
     def self.included(base)
       base.helper_method(:messages)
+      base.before_filter { |c| c.flash.each { |t, m| c.messages.add(m, t) } }
     end
     
     def messages
@@ -30,8 +31,12 @@ module Scintillation
       @session[:messages] = {}
     end
     
-    def add(body, tone = nil, scope = nil)
-      (@session[:messages][scope.to_s] ||= []) << Scintillation::Message.new(body, tone)
+    def add(obj, tone = nil, scope = nil)
+      @session[:messages][scope.to_s] ||= []
+      @session[:messages][scope.to_s] += case obj
+        when ActiveRecord::Errors then obj.error.full_messages
+        else [Scintillation::Message.new(obj, tone)]
+      end
     end
     
     def get(scope = nil)
