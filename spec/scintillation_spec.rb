@@ -4,19 +4,19 @@ describe Scintillation::SessionMessages do
   it "should add/get messages" do
     sm = Scintillation::SessionMessages.new({})
     
-    sm.add_message("a")
-    sm.add_message("b", :tone => 'x')
-    sm.add_message("c", :scope => 'y')
-    sm.add_message("d", :tone => 'x', :scope => 'y')
+    sm.add("a")
+    sm.add("b", :tone => 'x')
+    sm.add("c", :scope => 'y')
+    sm.add("d", :tone => 'x', :scope => 'y')
     
-    messages = sm.get_messages
+    messages = sm.get
     messages.size.should == 2
     messages.map { |m| [m.to_s, m.tone, m.scope] }.should == [['a', nil, nil], ['b', 'x', nil]]
     
-    messages = sm.get_messages('z')
+    messages = sm.get('z')
     messages.size.should == 0
     
-    messages = sm.get_messages('y')
+    messages = sm.get('y')
     messages.size.should == 2
     messages.map { |m| [m.to_s, m.tone, m.scope] }.should == [['c', nil, 'y'], ['d', 'x', 'y']]
   end

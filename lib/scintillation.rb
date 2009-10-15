@@ -1,15 +1,11 @@
 module Scintillation
   
   module Messageable
-    def self.included(base)
-      base.delegate([:add_message, :get_messages], :to => :messages) if base.respond_to?(:delegate)
-    end
-    
     def method_missing(name, *args)
       if /^(([a-z]+)_)?msg(_for_([a -z]+))?$/.match(name.to_s)
-        add_message(args.first, :tone => $2, :scope => $4)
+        messages.add(args.first, :tone => $2, :scope => $4)
       elsif /^(([a-z]+)_)?msgs$/.match(name.to_s)
-        get_messages($2)
+        messages.get($2)
       else
         super
       end
@@ -23,7 +19,6 @@ module Scintillation
     
     def self.included(base)
       base.helper_method(:messages)
-      super
     end
     
     def messages
@@ -45,11 +40,11 @@ module Scintillation
       @session[:messages] = []
     end
     
-    def add_message(body, options = {})
+    def add(body, options = {})
       @session[:messages] << Scintillation::Message.new(body, options[:tone], options[:scope])
     end
     
-    def get_messages(scope = nil)
+    def get(scope = nil)
       msgs = []
       @session[:messages].delete_if { |m| msgs << m if m.scope == scope }
       msgs
