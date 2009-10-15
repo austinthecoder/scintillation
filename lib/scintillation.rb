@@ -10,10 +10,11 @@ module Scintillation
       @messages ||= Scintillation::SessionMessages.new(session)
     end
     
-    def method_missing(name, *args, &block)
-      if /^((\w+)_)?msg(_for_(\w+))?$/.match(name.to_s)
+    def method_missing(method, *args, &block)
+      n = method.to_s
+      if /^((\w+)_)?msg(_for_(\w+))?$/.match(n)
         messages.add(args[0], $2, $4)
-      elsif /^((\w+)_)?msgs$/.match(name.to_s)
+      elsif /^((\w+)_)?msgs$/.match(n)
         messages.get($2)
       else
         super
@@ -24,8 +25,9 @@ module Scintillation
   ##################################################
   
   module ViewHelpers
-    def method_missing(name, *args)
-      /^((\w+)_)?msgs$/.match(name.to_s) ? messages.get($2) : super
+    def method_missing(method, *args, &block)
+      n = method.to_s
+      /^((\w+)_)?msgs$/.match(n) ? messages.get($2) : super
     end
   end
   
