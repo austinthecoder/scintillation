@@ -3,7 +3,7 @@ module Scintillation
   module ControllerHelpers
     def self.included(base)
       base.helper_method(:messages)
-      base.before_filter { |c| c.flash.each { |t, m| c.messages.add(m, t) } }
+      base.before_filter { |c| c.send(:flash).each { |t, m| c.messages.add(m, t) } }
     end
     
     def messages
