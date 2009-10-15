@@ -10,13 +10,13 @@ module Scintillation
       @messages ||= Scintillation::SessionMessages.new(session)
     end
     
-    def method_missing(name, *args)
+    def method_missing(name, *args, &block)
       if /^((\w+)_)?msg(_for_(\w+))?$/.match(name.to_s)
         messages.add(args[0], $2, $4)
       elsif /^(([a-z]+)_)?msgs$/.match(name.to_s)
         messages.get($2)
       else
-        super
+        super(name, args, &block)
       end
     end
   end
