@@ -71,6 +71,6 @@ module Scintillation
 end
 
 if defined? Rails
-  ActionController::Base.send(:include, ControllerHelpers)
-  ActionView::Base.send(:include, ViewHelpers)
+  ActionController::Base.send(:include, Scintillation::ControllerHelpers)
+  ActionView::Base.send(:include, Scintillation::ViewHelpers)
 end
