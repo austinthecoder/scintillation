@@ -13,10 +13,10 @@ module Scintillation
     def method_missing(name, *args, &block)
       if /^((\w+)_)?msg(_for_(\w+))?$/.match(name.to_s)
         messages.add(args[0], $2, $4)
-      elsif /^(([a-z]+)_)?msgs$/.match(name.to_s)
+      elsif /^((\w+)_)?msgs$/.match(name.to_s)
         messages.get($2)
       else
-        super(name, args, &block)
+        super
       end
     end
   end
@@ -25,7 +25,7 @@ module Scintillation
   
   module ViewHelpers
     def method_missing(name, *args)
-      /^(([a-z]+)_)?msgs$/.match(name.to_s) ? messages.get($2) : super
+      /^((\w+)_)?msgs$/.match(name.to_s) ? messages.get($2) : super
     end
   end
   
