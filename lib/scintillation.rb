@@ -1,22 +1,6 @@
 module Scintillation
   
-  module Messageable
-    def method_missing(name, *args)
-      if /^(([a-z]+)_)?msg(_for_([a -z]+))?$/.match(name.to_s)
-        messages.add(args.first, :tone => $2, :scope => $4)
-      elsif /^(([a-z]+)_)?msgs$/.match(name.to_s)
-        messages.get($2)
-      else
-        super
-      end
-    end
-  end
-  
-  ##################################################
-  
   module ControllerHelpers
-    include Scintillation::Messageable
-    
     def self.included(base)
       base.helper_method(:messages)
     end
@@ -24,12 +8,18 @@ module Scintillation
     def messages
       @messages ||= Scintillation::SessionMessages.new(session)
     end
+    
+    def method_missing(name, *args)
+      /^(([a-z]+)_)?msg(_for_([a -z]+))?$/.match(name.to_s) ? messages.add(args[0], $2, $4) : super
+    end
   end
   
   ##################################################
   
   module ViewHelpers
-    include Scintillation::Messageable
+    def method_missing(name, *args)
+      /^(([a-z]+)_)?msgs$/.match(name.to_s) ? messages.get($2) : super
+    end
   end
   
   ##################################################
@@ -37,29 +27,26 @@ module Scintillation
   class SessionMessages
     def initialize(session)
       @session = session
-      @session[:messages] = []
+      @session[:messages] = {}
     end
     
-    def add(body, options = {})
-      @session[:messages] << Scintillation::Message.new(body, options[:tone], options[:scope])
+    def add(body, tone = nil, scope = nil)
+      (@session[:messages][scope.to_s] ||= []) << Scintillation::Message.new(body, tone)
     end
     
     def get(scope = nil)
-      msgs = []
-      @session[:messages].delete_if { |m| msgs << m if m.scope == scope }
-      msgs
+      @session[:messages].delete(scope.to_s) || []
     end
   end
   
   ##################################################
   
   class Message
-    attr_reader :to_s, :tone, :scope
-
-    def initialize(body, tone = nil, scope = nil)
+    attr_reader :to_s, :tone
+  
+    def initialize(body, tone = nil)
       @to_s = body.to_s
       @tone = tone.to_s unless tone !~ /\S/
-      @scope = scope.to_s unless scope !~ /\S/
     end
   end
   
