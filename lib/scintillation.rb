@@ -60,6 +60,7 @@ module Scintillation
     end
     
     def display(scope = nil)
+      raise 's'
       msgs = get(scope)
       unless msgs
         "<ul>\n" + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n") + "</ul>"
