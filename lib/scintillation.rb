@@ -16,7 +16,7 @@ module Scintillation
       elsif /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       else
-        super(method.to_sym, args, &block)
+        super
       end
     end
   end
@@ -28,7 +28,7 @@ module Scintillation
       if /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       else
-        super(method.to_sym, args, &block)
+        super
       end
     end
   end
@@ -62,6 +62,17 @@ module Scintillation
 end
 
 if defined? Rails
+  #a fix until they patch
+  module ActionController
+    class Base
+      def method_missing(method, *args, &block)
+        super(method.to_sym, args, &block)
+      rescue NoMethodError
+        default_render
+      end
+    end
+  end
+  
   ActionController::Base.send(:include, Scintillation::ControllerHelpers)
   ActionView::Base.send(:include, Scintillation::ViewHelpers)
 end
