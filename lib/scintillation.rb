@@ -28,6 +28,7 @@ module Scintillation
       if /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       elsif /^display_((\w+)_)?msgs$/.match(method.to_s)
+        raise 's'
         messages.display($2)
       else
         super
