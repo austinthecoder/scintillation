@@ -16,7 +16,7 @@ module Scintillation
       elsif /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       else
-        super
+        super(method.to_sym, args, &block)
       end
     end
   end
@@ -28,7 +28,7 @@ module Scintillation
       if /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       else
-        super
+        super(method.to_sym, args, &block)
       end
     end
     
