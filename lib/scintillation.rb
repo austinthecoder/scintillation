@@ -44,12 +44,12 @@ module Scintillation
     
     def add(obj, tone = nil, scope = nil)
       @session[:messages][scope.to_s] ||= []
-      raise obj.inspect
+      
       case obj
-      when ActiveRecord::Errors
-        obj.full_messages.each { |m| raise m.inspect; add(m, tone, scope) }
-      else
-        @session[:messages][scope.to_s] << Scintillation::Message.new(obj, tone)
+        when Array then obj.each { |o| add(o, tone, scope) }
+        when ActiveRecord::Errors then add(obj.full_messages, tone, scope)
+        when String, Symbol then @session[:messages][scope.to_s] << Scintillation::Message.new(obj, tone)
+        else raise(ArgumentError)
       end
     end
     
