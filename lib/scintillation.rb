@@ -76,7 +76,7 @@ if defined? Rails
     class Base
       def method_missing(method, *args, &block)
         super(method.to_sym, args, &block)
-      rescue NoMethodError
+      rescue NoMethodError, NameError
         default_render
       end
     end
