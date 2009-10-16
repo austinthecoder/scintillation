@@ -46,7 +46,7 @@ module Scintillation
       @session[:messages][scope.to_s] ||= []
       case obj
       when ActiveRecord::Errors
-        obj.full_messages.each { |m| add(m, tone, scope) }
+        obj.full_messages.each { |m| raise m.inspect; add(m, tone, scope) }
       else
         @session[:messages][scope.to_s] << Scintillation::Message.new(obj, tone)
       end
