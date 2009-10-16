@@ -27,6 +27,8 @@ module Scintillation
     def method_missing(method, *args, &block)
       if /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
+      elsif /^display_((\w+)_)?msgs$/.match(method.to_s)
+        messages.display($2)
       else
         super
       end
@@ -55,6 +57,12 @@ module Scintillation
     
     def get(scope = nil)
       @temp_msgs[scope.to_s] ||= (@session[:messages].delete(scope.to_s) || [])
+    end
+    
+    def display(scope = nil)
+      unless msgs.empty?
+        "<ul>\n" + get(scope).map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n") + "</ul>"
+      end
     end
   end
   
