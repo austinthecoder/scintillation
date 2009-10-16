@@ -55,7 +55,12 @@ module Scintillation
         when Array then obj.each { |o| add(o, tone, scope) }
         when ActiveRecord::Errors then add(obj.full_messages, tone, scope)
         when String, Symbol then @session[:messages][scope.to_s] << Scintillation::Message.new(obj, tone)
-        else raise(ArgumentError)
+        else
+          if obj.respond_to?(:each)
+            obj.each { |o| add(o, tone, scope) }
+          else
+            raise ArgumentError
+          end
       end
     end
     
