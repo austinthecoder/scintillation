@@ -25,10 +25,11 @@ module Scintillation
   
   module ViewHelpers
     def method_missing(method, *args, &block)
+      raise 's'
       if /^((\w+)_)?msgs$/.match(method.to_s)
         messages.get($2)
       elsif /^display_((\w+)_)?msgs$/.match(method.to_s)
-        raise 's'
+        
         messages.display($2)
       else
         super
