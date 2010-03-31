@@ -56,7 +56,7 @@ module Scintillation
     
       def display_messages(msgs)
         unless msgs.empty?
-          "<ul>\n  " + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n  ") + "\n</ul>".html_safe
+          ("<ul>\n  " + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n  ") + "\n</ul>").html_safe
         end
       end
     end
