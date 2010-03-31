@@ -14,6 +14,8 @@ module Scintillation
         include InstanceMethods
         ActionView::Base.send(:include, Scintillation::View)
         
+        options.reverse_merge!(:scope => :messages)
+        
         # import flash messages
         before_filter { |c| c.send(:flash).each { |t, m| c.messages.add(m, t) } }
         
@@ -27,12 +29,10 @@ module Scintillation
     
     module InstanceMethods
       def method_missing(method, *args, &block)
-        if /^((\w+)_)?msg(_for_(\w+))?$/.match(method.to_s)
-          messages.add(args[0], $2, $4)
-        elsif /^((\w+)_)?msgs$/.match(method.to_s)
-          messages.get($2)
-        else
-          super
+        case method.to_s
+          when /^((\w+)_)?msg(_for_(\w+))?$/ then messages.add(args[0], $2, $4)
+          when /^((\w+)_)?msgs$/ then messages.get($2)
+          else super
         end
       end
     end
@@ -47,7 +47,7 @@ module Scintillation
     
     module InstanceMethods
       def method_missing(method, *args, &block)
-        if /^((\w+)_)?msgs$/.match(method.to_s)
+        if method.to_s =~ /^((\w+)_)?msgs$/
           messages.get($2)
         else
           super
@@ -56,7 +56,7 @@ module Scintillation
     
       def display_messages(msgs)
         unless msgs.empty?
-          "<ul>\n  " + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n  ") + "\n</ul>"
+          "<ul>\n  " + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n  ") + "\n</ul>".html_safe
         end
       end
     end
