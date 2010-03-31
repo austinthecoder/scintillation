@@ -1,40 +1,63 @@
 module Scintillation
   
-  module ControllerHelpers
+  def self.included(base)
+    base.include(Controller)
+  end
+  
+  module Controller
     def self.included(base)
-      base.helper_method(:messages)
-      base.before_filter { |c| c.send(:flash).each { |t, m| c.messages.add(m, t) } }
+      base.extend(ClassMethods)
     end
     
-    def messages
-      @messages ||= Scintillation::SessionMessages.new(session)
+    module ClassMethods
+      def scintillate(options => {})
+        include InstanceMethods
+        ActionView::Base.send(:include, Scintillation::View)
+        
+        # import flash messages
+        before_filter { |c| c.send(:flash).each { |t, m| c.messages.add(m, t) } }
+        
+        helper_method :messages
+        
+        define_method(:messages) do
+          @messages ||= Scintillation::SessionMessages.new(session, :scope => options[:scope])
+        end
+      end
     end
     
-    def method_missing(method, *args, &block)
-      if /^((\w+)_)?msg(_for_(\w+))?$/.match(method.to_s)
-        messages.add(args[0], $2, $4)
-      elsif /^((\w+)_)?msgs$/.match(method.to_s)
-        messages.get($2)
-      else
-        super
+    module InstanceMethods
+      def method_missing(method, *args, &block)
+        if /^((\w+)_)?msg(_for_(\w+))?$/.match(method.to_s)
+          messages.add(args[0], $2, $4)
+        elsif /^((\w+)_)?msgs$/.match(method.to_s)
+          messages.get($2)
+        else
+          super
+        end
       end
     end
   end
   
   ##################################################
   
-  module ViewHelpers
-    def method_missing(method, *args, &block)
-      if /^((\w+)_)?msgs$/.match(method.to_s)
-        messages.get($2)
-      else
-        super
-      end
+  module View
+    def self.included(base)
+      base.include(InstanceMethods)
     end
     
-    def display_messages(msgs)
-      unless msgs.empty?
-        "<ul>\n  " + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n  ") + "\n</ul>"
+    module InstanceMethods
+      def method_missing(method, *args, &block)
+        if /^((\w+)_)?msgs$/.match(method.to_s)
+          messages.get($2)
+        else
+          super
+        end
+      end
+    
+      def display_messages(msgs)
+        unless msgs.empty?
+          "<ul>\n  " + msgs.map { |m| "<li class=\"#{m.tone}\">#{m}</li>" }.join("\n  ") + "\n</ul>"
+        end
       end
     end
   end
@@ -42,17 +65,22 @@ module Scintillation
   ##################################################
   
   class SessionMessages
-    def initialize(session)
+    def initialize(session, options = {})
+      options.reverse_merge!(:scope => :messages)
       @session = session
-      @session[:messages] ||= {}
+      @session_scope = options[:scope]
       @temp_msgs = {}
     end
     
+    def msgs
+      @session[@session_scope] ||= {}
+    end
+    
     def add(obj, tone = nil, scope = nil)
-      @session[:messages][scope.to_s] ||= []
+      msgs[scope.to_s] ||= []
       
       case obj
-        when String, Symbol then @session[:messages][scope.to_s] << Scintillation::Message.new(obj, tone)
+        when String, Symbol then msgs[scope.to_s] << Scintillation::Message.new(obj, tone)
         when ActiveRecord::Errors then add(obj.full_messages, tone, scope)
         when Enumerable then obj.each { |o| add(o, tone, scope) }
         else add(obj.to_s, tone, scope)
@@ -60,7 +88,7 @@ module Scintillation
     end
     
     def get(scope = nil)
-      @temp_msgs[scope.to_s] ||= (@session[:messages].delete(scope.to_s) || [])
+      @temp_msgs[scope.to_s] ||= (msgs.delete(scope.to_s) || [])
     end
   end
   
@@ -70,7 +98,7 @@ module Scintillation
   
 end
 
-if defined? Rails
+if defined?(Rails)
   #a fix until they patch
   module ActionController
     class Base
@@ -82,6 +110,5 @@ if defined? Rails
     end
   end
   
-  ActionController::Base.send(:include, Scintillation::ControllerHelpers)
-  ActionView::Base.send(:include, Scintillation::ViewHelpers)
+  ActionController::Base.send(:include, Scintillation)
 end
