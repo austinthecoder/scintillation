@@ -10,7 +10,7 @@ module Scintillation
     end
     
     module ClassMethods
-      def scintillate(options => {})
+      def scintillate(options = {})
         include InstanceMethods
         ActionView::Base.send(:include, Scintillation::View)
         
