@@ -1,7 +1,7 @@
 module Scintillation
   
   def self.included(base)
-    base.include(Controller)
+    base.send(:include, Controller)
   end
   
   module Controller
@@ -42,7 +42,7 @@ module Scintillation
   
   module View
     def self.included(base)
-      base.include(InstanceMethods)
+      base.send(:include, InstanceMethods)
     end
     
     module InstanceMethods
