@@ -78,10 +78,10 @@ module Scintillation
       msgs[scope.to_s] ||= []
       
       case obj
-        when String, Symbol then msgs[scope.to_s] << Scintillation::Message.new(obj, tone)
-        when ActiveRecord::Errors then add(obj.full_messages, tone, scope)
-        when Enumerable then obj.each { |o| add(o, tone, scope) }
-        else add(obj.to_s, tone, scope)
+        when ActiveModel::Errors then obj.full_messages
+        else Array(obj)
+      end.each do |m|
+        msgs[scope.to_s] << Scintillation::Message.new(m.to_s, tone)
       end
     end
     
@@ -98,15 +98,15 @@ end
 
 if defined?(Rails)
   #a fix until they patch
-  module ActionController
-    class Base
-      def method_missing(method, *args, &block)
-        super(method.to_sym, args, &block)
-      rescue NoMethodError
-        default_render
-      end
-    end
-  end
+  # module ActionController
+  #   class Base
+  #     def method_missing(method, *args, &block)
+  #       super(method.to_sym, args, &block)
+  #     rescue NoMethodError
+  #       default_render
+  #     end
+  #   end
+  # end
   
   ActionController::Base.send(:include, Scintillation)
 end

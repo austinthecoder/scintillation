@@ -8,7 +8,7 @@ begin
     gem.summary = %Q{A flash messages replacement}
     gem.description = %Q{A flash messages replacement}
     gem.email = "soccer022483@gmail.com"
-    gem.homepage = "http://gemcutter.org/gems/scintillation"
+    gem.homepage = "http://github.com/soccer022483/scintillation"
     gem.authors = ["Austin Schneider"]
     gem.add_development_dependency "rspec"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
