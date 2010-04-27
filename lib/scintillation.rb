@@ -96,17 +96,4 @@ module Scintillation
   
 end
 
-if defined?(Rails)
-  #a fix until they patch
-  # module ActionController
-  #   class Base
-  #     def method_missing(method, *args, &block)
-  #       super(method.to_sym, args, &block)
-  #     rescue NoMethodError
-  #       default_render
-  #     end
-  #   end
-  # end
-  
-  ActionController::Base.send(:include, Scintillation)
-end
+ActionController::Base.send(:include, Scintillation) if defined?(Rails)
