@@ -11,7 +11,7 @@ module Scintillation
     
       options.reverse_merge!(:scope => :messages)
     
-      helper_method :messages
+      helper_method :message_store
     
       define_method(:scintillation_scope) { options[:scope] }
     end
