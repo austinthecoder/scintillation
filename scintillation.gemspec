@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{scintillation}
-  s.version = "1.0.11"
+  s.version = "1.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Austin Schneider"]
-  s.date = %q{2010-04-27}
+  s.date = %q{2010-06-24}
   s.description = %q{A flash messages replacement}
   s.email = %q{soccer022483@gmail.com}
   s.extra_rdoc_files = [
@@ -24,8 +24,13 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/scintillation.rb",
+     "lib/scintillation/controller.rb",
+     "lib/scintillation/message_queue.rb",
+     "lib/scintillation/message_queue/message.rb",
+     "lib/scintillation/view.rb",
      "scintillation.gemspec",
-     "spec/scintillation_spec.rb",
+     "spec/scintillation/controller_spec.rb",
+     "spec/scintillation/message_queue_spec.rb",
      "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/soccer022483/scintillation}
@@ -34,7 +39,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{A flash messages replacement}
   s.test_files = [
-    "spec/scintillation_spec.rb",
+    "spec/scintillation/controller_spec.rb",
+     "spec/scintillation/message_queue_spec.rb",
      "spec/spec_helper.rb"
   ]
 
