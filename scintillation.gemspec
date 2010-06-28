@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{scintillation}
-  s.version = "1.1.0"
+  s.version = "1.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Austin Schneider"]
-  s.date = %q{2010-06-24}
+  s.date = %q{2010-06-27}
   s.description = %q{A flash messages replacement}
   s.email = %q{soccer022483@gmail.com}
   s.extra_rdoc_files = [
