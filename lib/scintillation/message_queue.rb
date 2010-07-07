@@ -1,5 +1,3 @@
-require 'scintillation/message_queue/message'
-
 module Scintillation
   module MessageQueue
     
@@ -22,3 +20,5 @@ module Scintillation
   
   end
 end
+
+require Pathname.new(__FILE__).expand_path.parent.join('message_queue', 'message')
