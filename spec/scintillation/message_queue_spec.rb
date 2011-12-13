@@ -4,67 +4,88 @@ class MessageQueueTest
   include Scintillation::MessageQueue
 end
 
-describe Scintillation::MessageQueue do
+describe MessageQueueTest do
+  
   before do
     @mqt = MessageQueueTest.new
   end
   
-  def create_message(text, tone)
-    Scintillation::MessageQueue::Message.new(text, tone)
-  end
-  
-  describe "adding messages" do
-    it "should be able to add messages with no tone or scope" do
-      args = ["msg", nil]
-      msg = create_message(*args)
-      Scintillation::MessageQueue::Message.stub!(:new).with(*args).and_return(msg)
-      @mqt.msg(args[0])
-      @mqt.message_store.should == {nil => [msg]}
-    end
-  
-    it "should be able to add messages with a tone" do
-      args = ["msg", "cool"]
-      msg = create_message(*args)
-      Scintillation::MessageQueue::Message.stub!(:new).with(*args).and_return(msg)
-      @mqt.cool_msg(args[0])
-      @mqt.message_store.should == {nil => [msg]}
-    end
-  
-    it "should be able to add messages with a scope" do
-      args = ["msg", nil]
-      msg = create_message(*args)
-      Scintillation::MessageQueue::Message.stub!(:new).with(*args).and_return(msg)
-      @mqt.msg_for_login(args[0])
-      @mqt.message_store.should == {'login' => [msg]}
-    end
-  
-    it "should be able to add messages with a tone and scope" do
-      args = ["msg", "cool"]
-      msg = create_message(*args)
-      Scintillation::MessageQueue::Message.stub!(:new).with(*args).and_return(msg)
-      @mqt.cool_msg_for_login(args[0])
-      @mqt.message_store.should == {'login' => [msg]}
-    end
-  end
-  
-  describe "with some messages added" do
-    before do
-      @mqt.msg("msg")
-      @mqt.cool_msg("cool msg")
-      @mqt.msg_for_login("msg for login")
-      @mqt.cool_msg_for_login("cool msg for login")
+  describe "#method_missing" do
+    [[nil, nil], ['cool', nil], [nil, 'login'], ['cool', 'login']].each do |tone, namespace|
+      method = "#{tone + '_' if tone}msg#{'_for_' + namespace if namespace}"
+      describe "##{method}" do
+        before do
+          @msg = Scintillation::MessageQueue::Message.new(@text, @tone)
+          Scintillation::MessageQueue::Message.stub!(:new => @msg)
+        end
+        
+        it "should instantiate a message" do
+          Scintillation::MessageQueue::Message.should_receive(:new).with('some message', tone)
+          @mqt.send(method, 'some message')
+        end
+        
+        it "should add the message to the #message_store" do
+          @mqt.send(method, 'some message')
+          @mqt.message_store[namespace].should == [@msg]
+        end
+      end
     end
     
-    it "should retrieve messages by scope" do
-      @mqt.msgs.should == [
-        create_message("msg", nil),
-        create_message("cool msg", "cool"),
-      ]
-      @mqt.login_msgs.should == [
-        create_message("msg for login", nil),
-        create_message("cool msg for login", "cool"),
-      ]
-      @mqt.message_store.should be_empty
+    describe "#has_login_msgs?" do
+      it "should return true when the #message_store has login messages" do
+        @mqt.msg_for_login('hey')
+        @mqt.has_login_msgs?.should be_true
+      end
+      
+      it "should return false when the #message_store does not have login messages" do
+        @mqt.msg('hey')
+        @mqt.has_login_msgs?.should be_false
+      end
+      
+      it "should return false when the #message_store does not have login messages" do
+        @mqt.has_login_msgs?.should be_false
+      end
+    end
+    
+    describe "#has_msgs?" do
+      it "should return true when the #message_store has messages" do
+        @mqt.msg('hey')
+        @mqt.has_msgs?.should be_true
+      end
+      
+      it "should return false when the #message_store does not have messages" do
+        @mqt.has_msgs?.should be_false
+      end
+    end
+    
+    describe "#login_msgs" do
+      it "should return an empty array when the #message_store does not have login messages" do
+        @mqt.msg('hello')
+        @mqt.login_msgs.should == []
+      end
+      
+      context "when the #message_store has login messages" do
+        before do
+          2.times { @mqt.msg_for_login('hello') }
+        end
+        
+        it "should delete the messages from the #message_store" do
+          @mqt.login_msgs
+          @mqt.message_store['login'].should be_nil
+        end
+        
+        it "should return the messages" do
+          msgs = @mqt.message_store['login']
+          @mqt.login_msgs.should == msgs
+        end
+      end
     end
   end
+  
+  describe "#message_store" do
+    it "should return a hash" do
+      @mqt.message_store.should == {}
+    end
+  end
+  
 end

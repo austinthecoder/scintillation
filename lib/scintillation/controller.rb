@@ -19,6 +19,7 @@ module Scintillation
         @message_store ||= (session[scintillation_scope] ||= {})
       end
     end
+    
   end
 end
 
